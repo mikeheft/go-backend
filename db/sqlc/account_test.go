@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"github.com/mikeheft/go-backend/util"
@@ -54,4 +55,15 @@ func TestUpdateAccount(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, updatedAccount)
 	require.NotEqual(t, account.Balance, updatedAccount.Balance)
+}
+
+func TestDeleteAccount(t *testing.T) {
+	account := createRandomAccount(t)
+	err := testQueries.DeleteAccount(context.Background(), account.ID)
+	require.NoError(t, err)
+
+	account2, err := testQueries.GetAccount(context.Background(), account.ID)
+	require.Error(t, err)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.Empty(t, account2)
 }
