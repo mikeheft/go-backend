@@ -9,7 +9,9 @@ migratedown:
 postgres:
 	docker run --name postgres12 -p 54321:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
 sqlc:
-	docker run --rm -v $(pwd):/src -w /src sqlc/sqlc generate
+	docker run --rm -v $(PWD):/src -w /src sqlc/sqlc generate
+test:
+	go test -v -cover ./...
 
 
-.PHONY: postgres createdb dropdb migrateup migratedown
+.PHONY: postgres createdb dropdb migrateup migratedown test

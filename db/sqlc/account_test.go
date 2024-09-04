@@ -4,14 +4,15 @@ import (
 	"context"
 	"testing"
 
+	"github.com/mikeheft/go-backend/util"
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateAccount(t *testing.T) {
+func createRandomAccount(t *testing.T) Account {
 	arg := CreateAccountParams{
-		Owner:    "Tim",
-		Balance:  100,
-		Currency: "usd",
+		Owner:    util.RandomOwner(),
+		Balance:  util.RandomMoney(),
+		Currency: util.RandomCurrency(),
 	}
 
 	account, err := testQueries.CreateAccount(context.Background(), arg)
@@ -20,4 +21,23 @@ func TestCreateAccount(t *testing.T) {
 	require.Equal(t, arg.Owner, account.Owner)
 	require.Equal(t, arg.Balance, account.Balance)
 	require.Equal(t, arg.Currency, account.Currency)
+
+	require.NotZero(t, account.ID)
+	require.NotZero(t, account.CreatedAt)
+	require.NotZero(t, account.UpdatedAt)
+
+	return account
+}
+
+func TestCreateAccount(t *testing.T) {
+	createRandomAccount(t)
+}
+
+func TestGetAccount(t *testing.T) {
+	account := createRandomAccount(t)
+	account2, err := testQueries.GetAccount(context.Background(), account.ID)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, account2)
+	require.Equal(t, account, account2)
 }
