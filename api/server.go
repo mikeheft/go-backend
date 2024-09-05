@@ -17,10 +17,15 @@ func NewServer(store *db.Store) *Server {
 
 	// add routes to router
 	router.POST("/accounts", server.createAccount)
+	router.GET("/acounts/:id", server.getAccount)
 
 	server.router = router
 
 	return server
+}
+
+func (server *Server) Start(address string) error {
+	return server.router.Run(address)
 }
 
 func errorResponse(err error) gin.H {
