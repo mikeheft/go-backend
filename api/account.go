@@ -62,7 +62,7 @@ func (server *Server) getAccount(ctx *gin.Context) {
 
 type listAccountsRequest struct {
 	Page     int32 `form:"page,default=1" min=1`
-	PageSize int32 `form:"page_size,default=10" min=5,max=10`
+	PageSize int32 `form:"page_size,default=10" min=5,max=100`
 }
 
 func (server *Server) listAccounts(ctx *gin.Context) {
