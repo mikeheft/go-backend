@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -52,18 +53,20 @@ func TestTransferTx(t *testing.T) {
 		require.NotZero(t, transfer.CreatedAt)
 
 		_, err = store.GetTransfer(context.Background(), transfer.ID)
-		require.NoError(t, err)
+		require.NoError(t, err, "Transfer not found: %v", err)
 
 		// check entries
 		fromEntry := result.FromEntry
+		fmt.Println(fromEntry)
 		require.NotEmpty(t, fromEntry)
+
 		require.Equal(t, account1.ID, fromEntry.AccountID)
 		require.Equal(t, -amount, fromEntry.Amount)
 		require.NotZero(t, fromEntry.ID)
 		require.NotZero(t, fromEntry.CreatedAt)
 
 		_, err = store.GetEntry(context.Background(), fromEntry.AccountID)
-		require.NoError(t, err)
+		require.NoError(t, err, "FromEntry not found: %v", err)
 
 		toEntry := result.ToEntry
 		require.NotEmpty(t, toEntry)
@@ -73,7 +76,7 @@ func TestTransferTx(t *testing.T) {
 		require.NotZero(t, toEntry.CreatedAt)
 
 		_, err = store.GetEntry(context.Background(), toEntry.AccountID)
-		require.NoError(t, err)
+		require.NoError(t, err, "ToEntry not found: %v", err)
 
 		// check accounts
 		fromAccount := result.FromAccount
