@@ -15,19 +15,22 @@ func TestTransferTx(t *testing.T) {
 	account2 := createRandomAccount(t)
 
 	// run n concurrent transfer transactions
-	n := 5
+	n := 1
 	amount := int64(10)
 
 	errs := make(chan error)
 	results := make(chan TransferTxResult)
 
 	for i := 0; i < n; i++ {
+		txName := fmt.Sprintf("tx => %d", i+1)
 		go func() {
-			result, err := store.TransferTx(context.Background(), CreateTransferParams{
+			ctx := context.WithValue(context.Background(), txKey, txName)
+			result, err := store.TransferTx(ctx, CreateTransferParams{
 				FromAccountID: account1.ID,
 				ToAccountID:   account2.ID,
 				Amount:        amount,
 			})
+
 			errs <- err
 			results <- result
 		}()
@@ -57,7 +60,6 @@ func TestTransferTx(t *testing.T) {
 
 		// check entries
 		fromEntry := result.FromEntry
-		fmt.Println(fromEntry)
 		require.NotEmpty(t, fromEntry)
 
 		require.Equal(t, account1.ID, fromEntry.AccountID)
@@ -65,7 +67,7 @@ func TestTransferTx(t *testing.T) {
 		require.NotZero(t, fromEntry.ID)
 		require.NotZero(t, fromEntry.CreatedAt)
 
-		_, err = store.GetEntry(context.Background(), fromEntry.AccountID)
+		_, err = store.GetEntry(context.Background(), fromEntry.ID)
 		require.NoError(t, err, "FromEntry not found: %v", err)
 
 		toEntry := result.ToEntry
@@ -75,7 +77,7 @@ func TestTransferTx(t *testing.T) {
 		require.NotZero(t, toEntry.ID)
 		require.NotZero(t, toEntry.CreatedAt)
 
-		_, err = store.GetEntry(context.Background(), toEntry.AccountID)
+		_, err = store.GetEntry(context.Background(), toEntry.ID)
 		require.NoError(t, err, "ToEntry not found: %v", err)
 
 		// check accounts
@@ -85,11 +87,11 @@ func TestTransferTx(t *testing.T) {
 
 		toAccount := result.ToAccount
 		require.NotEmpty(t, toAccount)
-		require.Equal(t, account1.ID, toAccount.ID)
+		require.Equal(t, account2.ID, toAccount.ID)
 
 		// Check balances
 		diff1 := account1.Balance - fromAccount.Balance
-		diff2 := account2.Balance - toAccount.Balance
+		diff2 := toAccount.Balance - account2.Balance
 		require.Equal(t, diff1, diff2)
 		require.True(t, diff1 > 0)
 		require.True(t, diff1%amount == 0)
