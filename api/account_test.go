@@ -1,7 +1,10 @@
 package api
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -17,14 +20,11 @@ func TestGetAccountAPI(t *testing.T) {
 	account := randomAccount()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	fmt.Printf("account.ID type: %T\n", account.ID)
-
-	var accountID int64 = account.ID
 
 	store := mock_db.NewMockStore(ctrl)
 	// build stubs
 	store.EXPECT().
-		GetAccount(gomock.Any(), gomock.Eq(accountID)).
+		GetAccount(gomock.Any(), gomock.Eq(account.ID)).
 		Times(1).
 		Return(account, nil)
 
@@ -32,13 +32,14 @@ func TestGetAccountAPI(t *testing.T) {
 	server := NewServer(store)
 	recorder := httptest.NewRecorder()
 
-	url := fmt.Sprintf("/accounts/%d", accountID)
+	url := fmt.Sprintf("/accounts/%d", account.ID)
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	require.NoError(t, err)
 
 	server.router.ServeHTTP(recorder, request)
 	// check response
 	require.Equal(t, http.StatusOK, recorder.Code)
+	requireBodyMatchAccount(t, recorder.Body, account)
 }
 
 func randomAccount() db.Account {
@@ -48,4 +49,14 @@ func randomAccount() db.Account {
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}
+}
+
+func requireBodyMatchAccount(t *testing.T, body *bytes.Buffer, account db.Account) {
+	data, err := ioutil.ReadAll(body)
+	require.NoError(t, err)
+
+	var gotAccount db.Account
+	err = json.Unmarshal(data, &gotAccount)
+	require.NoError(t, err)
+	require.Equal(t, gotAccount, account)
 }
