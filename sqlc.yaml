@@ -1,6 +1,4 @@
 version: "2"
-cloud:
-  project: "<PROJECT_ID>"
 sql:
   - schema: "db/migration"
     queries: "db/query"
