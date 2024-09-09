@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"math/rand"
 	"strings"
 	"time"
@@ -10,6 +11,12 @@ const alphabet = "qwertyuiopasdfghjklzxcvbnm"
 
 func init() {
 	rand.New(rand.NewSource(time.Now().UnixNano()))
+}
+
+func RandomEmail() string {
+	name := RandomOwner()
+
+	return fmt.Sprintf("%s@gmail.com", name)
 }
 
 func RandomInt(min, max int64) int64 {
