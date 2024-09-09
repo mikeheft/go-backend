@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/mikeheft/go-backend/util"
 	"github.com/stretchr/testify/require"
@@ -12,6 +13,7 @@ func createRandomUser(t *testing.T) User {
 	arg := CreateUserParams{
 		Username:       util.RandomOwner(),
 		HashedPassword: util.RandomString(7),
+		FullName:       util.RandomOwner(),
 		Email:          util.RandomEmail(),
 	}
 
@@ -22,10 +24,9 @@ func createRandomUser(t *testing.T) User {
 	require.Equal(t, arg.HashedPassword, user.HashedPassword)
 	require.Equal(t, arg.Email, user.Email)
 
-	require.NotEmpty(t, user.Username)
 	require.NotZero(t, user.CreatedAt)
 	require.NotZero(t, user.UpdatedAt)
-	require.NotZero(t, user.PasswordChangedAt)
+	require.True(t, user.PasswordChangedAt.IsZero())
 
 	return user
 }
@@ -41,4 +42,7 @@ func TestGetUser(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 	require.Equal(t, user, user2)
+	require.WithinDuration(t, user.PasswordChangedAt, user2.PasswordChangedAt, time.Second)
+	require.WithinDuration(t, user.CreatedAt, user2.CreatedAt, time.Second)
+	require.WithinDuration(t, user.UpdatedAt, user2.UpdatedAt, time.Second)
 }
