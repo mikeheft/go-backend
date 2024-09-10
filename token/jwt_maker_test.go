@@ -64,6 +64,7 @@ func TestInvalidJWTToken(t *testing.T) {
 	require.NoError(t, err)
 
 	payload, err = maker.VerifyToken(token)
+	require.Error(t, err)
 	require.EqualError(t, err, ErrInvalidToken.Error())
 	require.Nil(t, payload)
 }
