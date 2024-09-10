@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
@@ -14,6 +15,15 @@ type createUserRequest struct {
 	Password string `json:"password" binding:"required,min=6"`
 	FullName string `json:"full_name" binding:"required,alphanum"`
 	Email    string `json:"email" binding:"required,email"`
+}
+
+type createUserResponse struct {
+	Username          string    `json:"username"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
+	FullName          string    `json:"full_name"`
+	Email             string    `json:"email"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -48,5 +58,14 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, user)
+	rsp := createUserResponse{
+		Username:          user.Username,
+		FullName:          user.FullName,
+		Email:             user.Email,
+		PasswordChangedAt: user.PasswordChangedAt,
+		CreatedAt:         user.CreatedAt,
+		UpdatedAt:         user.UpdatedAt,
+	}
+
+	ctx.JSON(http.StatusOK, rsp)
 }
