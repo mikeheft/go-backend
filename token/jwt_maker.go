@@ -1,6 +1,7 @@
 package token
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -33,4 +34,32 @@ func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (str
 }
 
 // VerifyToken checker if the token is valid or not
-func (maker *JWTMaker) VerifyToken(token string) (*Payload, error) {}
+func (maker *JWTMaker) VerifyToken(token string) (*Payload, error) {
+	// Parse methods use this callback function to supply
+	// the key for verification.  The function receives the parsed,
+	// but unverified Token.  This allows you to use properties in the
+	// Header of the token (such as `kid`) to identify which key to use.
+	keyFunc := func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, ErrInvalidToken
+		}
+		return []byte(maker.secretKey), nil
+	}
+
+	jwtToken, err := jwt.ParseWithClaims(token, &Payload{}, keyFunc)
+	if err != nil {
+		verr, ok := err.(*jwt.ValidationError)
+		if ok && errors.Is(verr.Inner, ErrExpiredToken) {
+			return nil, ErrExpiredToken
+		}
+
+		return nil, ErrInvalidToken
+	}
+
+	payload, ok := jwtToken.Claims.(*Payload)
+	if !ok {
+		return nil, ErrInvalidToken
+	}
+
+	return payload, nil
+}
