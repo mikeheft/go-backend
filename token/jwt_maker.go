@@ -16,7 +16,7 @@ type JWTMaker struct {
 
 func NewJWTMaker(secretKey string) (Maker, error) {
 	if len(secretKey) < minSecretKeySize {
-		return nil, fmt.Errorf("invalid key size: must be at least $d characters", minSecretKeySize)
+		return nil, fmt.Errorf("invalid key size: must be at least %d characters", minSecretKeySize)
 	}
 
 	return &JWTMaker{secretKey}, nil
@@ -30,7 +30,7 @@ func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (str
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-	return jwtToken.SignedString(maker.secretKey)
+	return jwtToken.SignedString([]byte(maker.secretKey))
 }
 
 // VerifyToken checker if the token is valid or not
@@ -40,7 +40,8 @@ func (maker *JWTMaker) VerifyToken(token string) (*Payload, error) {
 	// but unverified Token.  This allows you to use properties in the
 	// Header of the token (such as `kid`) to identify which key to use.
 	keyFunc := func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+		_, ok := t.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
 			return nil, ErrInvalidToken
 		}
 		return []byte(maker.secretKey), nil
