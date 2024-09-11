@@ -16,13 +16,24 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials 1
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-2
+          role-to-assume: arn:aws:iam::957986144078:role/gh-actions-role
+          output-credentials: true
+          mask-aws-account-id: true
+
+      - name: Configure AWS credentials 1
         uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
         with:
           role-to-assume: arn:aws:iam::957986144078:role/gh-actions-role
           aws-region: us-west-2
           mask-aws-account-id: true
-          audience: simplebank-udemy-practice
+          aws-access-key-id: ${{ steps.creds.outputs.aws-access-key-id }}
+          aws-secret-access-key: ${{ steps.creds.outputs.aws-secret-access-key }}
+          aws-session-token: ${{ steps.creds.outputs.aws-session-token }}
 
       - name: Login to Amazon ECR
         id: login-ecr
