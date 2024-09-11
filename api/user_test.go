@@ -91,7 +91,7 @@ func TestCreateUser(t *testing.T) {
 			store := mockDb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			// Marshal boady data to JSON
