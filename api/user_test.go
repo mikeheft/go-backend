@@ -9,11 +9,13 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	mockDb "github.com/mikeheft/go-backend/db/mock"
 	db "github.com/mikeheft/go-backend/db/sqlc"
+	"github.com/mikeheft/go-backend/token"
 	"github.com/mikeheft/go-backend/util"
 	"github.com/stretchr/testify/require"
 )
@@ -52,6 +54,7 @@ func TestCreateUser(t *testing.T) {
 	testCases := []struct {
 		name          string
 		body          gin.H
+		setupAuth     func(t *testing.T, request *http.Request, tokenMaker token.Maker)
 		buildStubs    func(store *mockDb.MockStore)
 		checkResponse func(recorder *httptest.ResponseRecorder)
 	}{
@@ -62,6 +65,9 @@ func TestCreateUser(t *testing.T) {
 				"password":  password,
 				"full_name": user.FullName,
 				"email":     user.Email,
+			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuth(t, request, tokenMaker, authTypeBearer, user.Username, time.Minute)
 			},
 			buildStubs: func(store *mockDb.MockStore) {
 				arg := db.CreateUserParams{
@@ -98,9 +104,11 @@ func TestCreateUser(t *testing.T) {
 			data, err := json.Marshal(tc.body)
 			require.NoError(t, err)
 
-			url := "/users"
+			url := "/users/create"
 			req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
 			require.NoError(t, err)
+
+			tc.setupAuth(t, req, server.tokenMaker)
 
 			server.router.ServeHTTP(recorder, req)
 		})
