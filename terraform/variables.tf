@@ -3,17 +3,12 @@ variable "aws_region" {
   default     = "us-west-2"
 }
 
+variable "bucket_name" {
+  description = "unique name of bucket"
+  default     = "mikeheft-simplebank"
+}
+
 variable "ecr_repository_name" {
   description = "The name of the ECR repository"
   default     = "simplebank"
-}
-
-variable "github_org_repo" {
-  description = "GitHub organization and repository in the format org/repo"
-  default     = "mikeheft/*"
-}
-
-variable "branch_name" {
-  description = "The branch name for GitHub Actions"
-  default     = "main"
 }
