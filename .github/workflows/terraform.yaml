@@ -5,7 +5,14 @@ on:
     branches:
       - main
     paths:
-      - "terraform/**" # Only trigger on changes to the terraform directory
+      - "terraform/**" # Monitor changes in the terraform/ directory
+      - ".github/workflows/terraform.yml" # Monitor changes to this workflow file
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "terraform/**" # Monitor changes in the terraform/ directory
+      - ".github/workflows/terraform.yml" # Monitor changes to this workflow file
 
 jobs:
   terraform:
