@@ -21,11 +21,11 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.4.6 # Specify the Terraform version
+          terraform_version: 1.9.5
 
       # Step 3: Initialize Terraform
       - name: Terraform Init
-        working-directory: ./terraform # Specify the directory where your Terraform files are located
+        working-directory: ./terraform
         run: terraform init
 
       # Step 4: Terraform Plan (Optional, for debugging)
