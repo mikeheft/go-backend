@@ -10,8 +10,9 @@ module "ecr" {
 }
 
 module "rds" {
-  source = "./rds"
+  source                 = "./rds"
   rds_security_group_ids = module.security_groups.rds_security_group_ids
+  rds_subnet_group_name  = module.security_groups.rds_subnet_group_name
 }
 
 module "security_groups" {
