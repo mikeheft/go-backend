@@ -13,7 +13,7 @@ migratedown:
 migratedown1:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:54321/simple_bank?sslmode=disable" -verbose down 1
 postgres:
-	docker run --name postgres12 --network bank-network -p 54321:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
+	docker run --name postgres12 --network bank-network -p 54321:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret/password -d postgres:12-alpine
 server:
 	go run main.go
 sqlc:
