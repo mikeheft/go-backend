@@ -14,14 +14,14 @@ resource "aws_security_group" "rds_sg" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0//0"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = { Name = "rds-sg" }
 }
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name = "rds-subnet-group"
-  subnet_ids = var.private_subnet_ids
+  name        = "rds-subnet-group"
+  subnet_ids  = var.private_subnet_ids
   description = "RDS Subnet Group"
 }
