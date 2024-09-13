@@ -8,3 +8,13 @@ module "ecr" {
   source              = "./ecr"
   ecr_repository_name = var.ecr_repository_name
 }
+
+module "security_groups" {
+  source             = "./security_groups"
+  private_vpc_id     = module.vpc.private_vpc_id
+  private_subnet_ids = module.vpc.private_subnet_ids
+}
+
+module "vpc" {
+  source = "./vpc"
+}
