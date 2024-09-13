@@ -4,7 +4,7 @@ resource "aws_security_group" "rds_sg" {
   vpc_id      = var.private_vpc_id
 
   ingress {
-    from_port   = 54321
+    from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
     cidr_blocks = ["10.0.0.0/16"]
