@@ -9,6 +9,11 @@ module "ecr" {
   ecr_repository_name = var.ecr_repository_name
 }
 
+module "rds" {
+  source = "./rds"
+  rds_security_group_ids = module.security_groups.rds_security_group_ids
+}
+
 module "security_groups" {
   source             = "./security_groups"
   private_vpc_id     = module.vpc.private_vpc_id
