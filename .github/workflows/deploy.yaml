@@ -11,43 +11,14 @@ on:
       - completed
 
 jobs:
-  check-for-terraform-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      terraform_changed: ${{ steps.check.outputs.terraform_changed }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Check if Terraform directory changed
-        id: check
-        run: |
-          if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
-            if git diff --name-only HEAD~1 HEAD | grep -q '^terraform/'; then
-              echo "terraform_changed=true" >> $GITHUB_ENV
-              echo "::set-output name=terraform_changed::true"
-            else
-              echo "terraform_changed=false" >> $GITHUB_ENV
-              echo "::set-output name=terraform_changed::false"
-            fi
-          else
-            echo "terraform_changed=false" >> $GITHUB_ENV
-            echo "::set-output name=terraform_changed::false"
-          fi
-      - name: Log terraform_changed output  # Add this to log the result
-        run: |
-          echo "Terraform directory change detected: ${{ steps.check.outputs.terraform_changed }}"
-
   terraform-config:
-    needs: check-for-terraform-changes
-    if: ${{ needs.check-for-terraform-changes.outputs.terraform_changed == 'true' }}
     uses: mikeheft/go-backend/.github/workflows/terraform.yaml@main # Calls the reusable Terraform workflow
 
   build-and-push:
     runs-on: ubuntu-latest
     needs: terraform-config
     # Only run if the terraform worflow was successful
-    if: ${{ needs.terraform-config.result == 'success' || needs.terraform-config.result == 'skipped' }}
+    if: ${{ needs.terraform-config.result == 'success' }}
 
     permissions:
       id-token: write
@@ -57,7 +28,6 @@ jobs:
       - name: Log terraform-config result
         run: |
           echo "terraform-config result: ${{ needs.terraform-config.result }}"
-        
       - name: Checkout code
         uses: actions/checkout@v3
 
