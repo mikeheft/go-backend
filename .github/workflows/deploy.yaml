@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-
+  workflow_dispatch:
   workflow_run:
     workflows: ["Terraform Plan and Apply"]
     types:
@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       terraform_changed: ${{ steps.check.outputs.terraform_changed }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -39,7 +38,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     # Only run if the terraform worflow was successful
-    if: ${{ github.event.workflow_run.conclusion != 'failure' }}
+    if: ${{ needs.terraform-config.result == 'success' || needs.terraform-config.result == 'skipped' }}
 
     permissions:
       id-token: write
