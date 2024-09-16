@@ -1,17 +1,7 @@
-name: Terraform Plan and Apply
+# name: Terraform Plan and Apply
 
 on:
   workflow_call: # This makes it reusable
-    inputs:
-      aws-region:
-        description: "AWS region for Terraform"
-        required: true
-        type: string
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        required: true
 
 jobs:
   terraform:
