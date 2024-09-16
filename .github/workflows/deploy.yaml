@@ -46,6 +46,10 @@ jobs:
       contents: read
 
     steps:
+      - name: Log terraform-config result
+        run: |
+          echo "terraform-config result: ${{ needs.terraform-config.result }}"
+        
       - name: Checkout code
         uses: actions/checkout@v3
 
