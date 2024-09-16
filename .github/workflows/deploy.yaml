@@ -29,6 +29,9 @@ jobs:
             echo "No changes in the Terraform directory."
             echo "::set-output name=terraform_changed::false"
           fi
+      - name: Log terraform_changed output  # Add this to log the result
+        run: |
+          echo "Terraform directory change detected: ${{ steps.check.outputs.terraform_changed }}"
 
   terraform-config:
     needs: check-for-terraform-changes
