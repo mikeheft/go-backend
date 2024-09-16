@@ -17,7 +17,7 @@ jobs:
       terraform_changed: ${{ steps.check.outputs.terraform_changed }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check if Terraform directory changed
         id: check
@@ -37,6 +37,7 @@ jobs:
 
   build-and-push:
     runs-on: ubuntu-latest
+    needs: terraform-config
     # Only run if the terraform worflow was successful
     if: ${{ needs.terraform-config.result == 'success' || needs.terraform-config.result == 'skipped' }}
 
