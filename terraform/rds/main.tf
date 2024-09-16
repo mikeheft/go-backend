@@ -6,7 +6,7 @@ resource "aws_db_instance" "postgres" {
   instance_class    = "db.t3.micro"
   # Will be annonymized in actual prod project
   username               = "root"
-  password               = "secret/password"
+  password               = "secret-password"
   publicly_accessible    = false
   skip_final_snapshot    = true
   vpc_security_group_ids = var.rds_security_group_ids
