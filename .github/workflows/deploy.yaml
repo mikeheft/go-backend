@@ -30,20 +30,14 @@ jobs:
             echo "No changes in the Terraform directory."
             echo "::set-output name=terraform_changed::false"
           fi
+
   terraform-config:
     needs: check-for-terraform-changes
-    runs-on: ubuntu-latest
-    if: ${{ needs.check-terraform-changes.outputs.terraform_changed == 'true' }}
+    if: ${{ needs.check-for-terraform-changes.outputs.terraform_changed == 'true' }}
     uses: mikeheft/go-backend/.github/workflows/terraform.yaml@main # Calls the reusable Terraform workflow
-    with:
-      aws-region: "us-west-2"
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   build-and-push:
     runs-on: ubuntu-latest
-
     # Only run if the terraform worflow was successful
     if: ${{ github.event.workflow_run.conclusion != 'failure' }}
 
