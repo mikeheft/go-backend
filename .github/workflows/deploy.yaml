@@ -35,11 +35,15 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.ROLE_NAME }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-west-2
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
+      # - name: Load Secrets
+      #   run: |
+      #     aws secretsmanager get-secret-value --secret-id simple_bank --query SecretString --output-text text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
