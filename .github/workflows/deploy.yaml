@@ -10,9 +10,14 @@ on:
     types:
       - completed
 
+env:
+  AWS_REGION: us-west-2
+
 jobs:
   terraform-config:
     uses: mikeheft/go-backend/.github/workflows/terraform.yaml@main # Calls the reusable Terraform workflow
+    with:
+      aws-region: us-west-2
 
   build-and-push:
     runs-on: ubuntu-latest
