@@ -16,6 +16,10 @@ env:
 jobs:
   terraform-config:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       # Step 1: Checkout the repository
       - name: Checkout code
