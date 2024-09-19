@@ -10,12 +10,10 @@ on:
     types:
       - completed
 
-env:
-  AWS_REGION: us-west-2
-
 jobs:
   terraform-config:
     uses: mikeheft/go-backend/.github/workflows/terraform.yaml@main # Calls the reusable Terraform workflow
+    secrets: inherit
     with:
       aws-region: us-west-2
 
