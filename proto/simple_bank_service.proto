@@ -4,11 +4,10 @@ package pb;
 
 import "create_user.proto";
 import "login_user.proto";
-import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/mikeheft/go-backend/pb";
 
 service SimpleBank {
-  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse)
-  rpc LoginUser (LoginUserRequest) returns (LoginUserResponse)
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {}
+  rpc LoginUser (LoginUserRequest) returns (LoginUserResponse) {}
 }
