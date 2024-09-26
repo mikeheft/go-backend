@@ -2,6 +2,8 @@ createdb:
 	docker exec -it postgres12 createdb -U root --username=root --owner=root simple_bank
 dropdb:
 	docker exec -it postgres12 dropdb simple_bank
+evans:
+	evans --host localhost --port 9090 -r repl
 gen_mock:
 	mockgen -package mockDb -destination db/mock/store.go github.com/mikeheft/go-backend/db/sqlc Store
 migrateup:
@@ -27,4 +29,4 @@ test:
 	go test -v -cover ./...
 
 
-.PHONY: postgres createdb dropdb migrateup migratedown server sqlc test migrateup1 migratedown1 proto
+.PHONY: postgres createdb dropdb evans migrateup migratedown server sqlc test migrateup1 migratedown1 proto
