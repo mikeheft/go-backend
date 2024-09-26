@@ -93,7 +93,14 @@ func (store *SQLStore) TransferTx(ctx context.Context, arg CreateTransferParams)
 		}
 
 		if arg.FromAccountID < arg.ToAccountID {
-			result.FromAccount, result.ToAccount, err = addMoney(ctx, q, arg.FromAccountID, -arg.Amount, arg.ToAccountID, arg.Amount)
+			result.FromAccount, result.ToAccount, err = addMoney(
+				ctx,
+				q,
+				arg.FromAccountID,
+				-arg.Amount,
+				arg.ToAccountID,
+				arg.Amount,
+			)
 			if err != nil {
 				return err
 			}
