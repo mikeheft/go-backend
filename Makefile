@@ -2,6 +2,7 @@ createdb:
 	docker exec -it postgres12 createdb -U root --username=root --owner=root simple_bank
 dropdb:
 	docker exec -it postgres12 dropdb simple_bank
+# GRPC client for local use
 evans:
 	evans --host localhost --port 9090 -r repl
 gen_mock:
@@ -16,15 +17,15 @@ migratedown1:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:54321/simple_bank?sslmode=disable" -verbose down 1
 postgres:
 	docker run --name postgres12 --network bank-network -p 54321:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
-server:
-	go run main.go
-sqlc:
-	docker run --rm -v $(PWD):/src -w /src sqlc/sqlc generate
 proto_gen:
 	rm -f pb/*.go
 	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
     --go-grpc_out=pb --go-grpc_opt=paths=source_relative \
     proto/*.proto
+server:
+	go run main.go
+sqlc:
+	docker run --rm -v $(PWD):/src -w /src sqlc/sqlc generate
 test:
 	go test -v -cover ./...
 
