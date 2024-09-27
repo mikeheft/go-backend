@@ -11,13 +11,13 @@ option go_package = "github.com/mikeheft/go-backend/pb";
 service SimpleBank {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
-        post: "/users/create"
+        post: "/v1/users/create"
         body: "*"
       };
   }
   rpc LoginUser (LoginUserRequest) returns (LoginUserResponse) {
     option (google.api.http) = {
-      post: "/users/login"
+      post: "/v1/users/login"
       body: "*"
     };
   }
