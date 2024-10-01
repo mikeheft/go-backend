@@ -8,6 +8,8 @@ import (
 	"net/http"
 
 	migrate "github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	_ "github.com/lib/pq"
 	"github.com/mikeheft/go-backend/api"
@@ -66,7 +68,7 @@ func runDBMigration(url string, dbSource string) {
 		log.Fatal("cannot create migration instance: ", err)
 	}
 
-	if err := migration.Up(); err != nil {
+	if err := migration.Up(); err != nil && err != migrate.ErrNoChange {
 		log.Fatal("cannot run migrations: ", err)
 	}
 
