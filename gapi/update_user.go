@@ -3,6 +3,7 @@ package gapi
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	db "github.com/mikeheft/go-backend/db/sqlc"
 	"github.com/mikeheft/go-backend/pb"
@@ -19,11 +20,6 @@ func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 		return nil, invalidArgumentError(violations)
 	}
 
-	hashedPassword, err := util.HashPassword(req.GetPassword())
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to hash password: %s", err)
-	}
-
 	arg := db.UpdateUserParams{
 		Username: req.GetUsername(),
 		FullName: sql.NullString{
@@ -37,10 +33,7 @@ func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 	}
 
 	if req.Password != nil {
-		arg.HashedPassword = sql.NullString{
-			String: hashedPassword,
-			Valid:  true,
-		}
+		updatePassword(&arg, req.GetPassword())
 	}
 
 	user, err := server.store.UpdateUser(ctx, arg)
@@ -83,4 +76,22 @@ func validateUpdateUserRequest(req *pb.UpdateUserRequest) (violations []*errdeta
 	}
 
 	return violations
+}
+
+func updatePassword(arg *db.UpdateUserParams, password string) error {
+	hashedPassword, err := util.HashPassword(password)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to hash password: %s", err)
+	}
+
+	arg.HashedPassword = sql.NullString{
+		String: hashedPassword,
+		Valid:  true,
+	}
+	arg.PasswordChangedAt = sql.NullTime{
+		Time:  time.Now(),
+		Valid: true,
+	}
+
+	return nil
 }
