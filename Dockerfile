@@ -10,7 +10,7 @@ FROM alpine:3.20
 WORKDIR /app
 COPY --from=builder /app/main .
 COPY app.env .
-COPY db/migration ./migration
+COPY db/migration ./db/migration
 COPY start.sh .
 COPY wait-for.sh .
 
