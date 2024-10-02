@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"net"
 	"net/http"
+	"os"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	migrate "github.com/golang-migrate/migrate/v4"
@@ -29,6 +31,8 @@ const (
 )
 
 func main() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
 	config, err := util.LoadConfig(".")
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load config")
