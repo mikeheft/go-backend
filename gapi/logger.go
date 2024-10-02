@@ -2,9 +2,12 @@ package gapi
 
 import (
 	"context"
-	"log"
+	"time"
 
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func GrpcLogger(
@@ -13,8 +16,28 @@ func GrpcLogger(
 	info *grpc.UnaryServerInfo,
 	handler grpc.UnaryHandler,
 ) (resp interface{}, err error) {
-	log.Println("received request")
+	startTime := time.Now()
 	result, err := handler(ctx, req)
+
+	duration := time.Since(startTime)
+
+	statusCode := codes.Unknown
+	if st, ok := status.FromError(err); ok {
+		statusCode = st.Code()
+	}
+
+	logger := log.Info()
+	if err != nil {
+		logger = log.Error().Err(err)
+	}
+
+	logger.
+		Str("protocol", "grpc").
+		Int("status_code", int(statusCode)).
+		Str("status_text", statusCode.String()).
+		Str("method", info.FullMethod).
+		Dur("duration", duration).
+		Msg("received request")
 
 	return result, err
 }
