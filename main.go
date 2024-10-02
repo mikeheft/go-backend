@@ -31,9 +31,12 @@ const (
 )
 
 func main() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
 	config, err := util.LoadConfig(".")
+
+	if config.Environment == "development" {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	}
+
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load config")
 	}
