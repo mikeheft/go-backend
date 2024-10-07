@@ -5,7 +5,7 @@ dropdb:
 # GRPC client for local use
 evans:
 	evans --host localhost --port 9090 -r repl
-gen_mock:
+mock:
 	mockgen -package mockDb -destination db/mock/store.go github.com/mikeheft/go-backend/db/sqlc Store
 migrateup:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:54321/simple_bank?sslmode=disable" -verbose up
@@ -17,7 +17,7 @@ migratedown1:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:54321/simple_bank?sslmode=disable" -verbose down 1
 postgres:
 	docker run --name postgres12 --network bank-network -p 54321:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
-proto_gen:
+proto:
 	rm -f pb/*.go
 	rm -f docs/swagger/*.swagger.json
 	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
@@ -35,4 +35,4 @@ test:
 	go test -v -cover ./...
 
 
-.PHONY: postgres createdb dropdb evans migrateup migratedown server sqlc test migrateup1 migratedown1 proto redis
+.PHONY: postgres createdb dropdb evans migrateup migratedown server sqlc test migrateup1 migratedown1 proto redis mock
