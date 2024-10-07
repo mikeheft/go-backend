@@ -25,6 +25,8 @@ proto_gen:
 		--grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative \
 		--openapiv2_out=docs/swagger --openapiv2_opt=allow_merge=true,merge_file_name=simple_bank \
     proto/*.proto
+redis:
+	docker run --name redis -p 6379:6379 -d redis:7-alpine
 server:
 	go run main.go
 sqlc:
@@ -33,4 +35,4 @@ test:
 	go test -v -cover ./...
 
 
-.PHONY: postgres createdb dropdb evans migrateup migratedown server sqlc test migrateup1 migratedown1 proto
+.PHONY: postgres createdb dropdb evans migrateup migratedown server sqlc test migrateup1 migratedown1 proto redis

@@ -20,7 +20,7 @@ const (
 
 func (distributor *RedisTaskDistributor) SendVerificationEmailTask(
 	ctx context.Context,
-	payload VerificationEmailPayload,
+	payload *VerificationEmailPayload,
 	opts ...asynq.Option,
 ) error {
 	jsonPayload, err := json.Marshal(payload)
