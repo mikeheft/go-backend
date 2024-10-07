@@ -9,7 +9,7 @@ import (
 type TaskDistributor interface {
 	SendVerificationEmailTask(
 		ctx context.Context,
-		payload VerificationEmailPayload,
+		payload *VerificationEmailPayload,
 		opts ...asynq.Option,
 	) error
 }
