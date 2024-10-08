@@ -5,6 +5,8 @@ import (
 
 	"github.com/hibiken/asynq"
 	db "github.com/mikeheft/go-backend/db/sqlc"
+	"github.com/redis/go-redis/v9"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -23,6 +25,9 @@ type RedisTaskProcesser struct {
 }
 
 func NewRedisTaskProcessor(redisClientOpt asynq.RedisClientOpt, store db.Store) TaskProcessor {
+	logger := NewLogger()
+	redis.SetLogger(logger)
+
 	server := asynq.NewServer(
 		redisClientOpt,
 		asynq.Config{
@@ -30,6 +35,15 @@ func NewRedisTaskProcessor(redisClientOpt asynq.RedisClientOpt, store db.Store) 
 				CriticalQueue: 10,
 				DefaultQueue:  2,
 			},
+			ErrorHandler: asynq.ErrorHandlerFunc(func(ctx context.Context, task *asynq.Task, err error) {
+				// This can also handle sending email, jiraTicket, or slack notificiations
+				log.Error().
+					Err(err).
+					Str("type", task.Type()).
+					Bytes("payload", task.Payload()).
+					Msg("process task failed")
+			}),
+			Logger: logger,
 		},
 	)
 
